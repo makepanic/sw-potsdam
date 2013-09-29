@@ -1,6 +1,13 @@
 {
-    "ttl" : 60000,
+    "ttl" : 3600000,
     "urls" : {
         "overview": "http://www.studentenwerk-potsdam.de/speiseplan.html"
+    },
+    "format" : {
+        "overview" : ""
+    },
+    "cache" : {
+        "dir" : "cache",
+        "overview" : "overview.json"
     }
 }

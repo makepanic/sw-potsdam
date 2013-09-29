@@ -16,14 +16,13 @@
                 VITAL: 'mensaVital',
                 FISH: 'mit Fisch',
                 PORK: 'mit Schweinefleisch',
-                VEGETABIL: 'ovo-lacto-vegetabil'
+                VEGETABIL: 'ovo-lacto-vegetabil',
+                CHICKEN: 'mit Geflügelfleisch'
             },
             parse = function ($label) {
                 var className = $label.attr('class'),
                     mealTypes = [],
-                    $labelTypes,
-                    i,
-                    max;
+                    $labelTypes;
 
                 if (className.indexOf('label') !== 0) {
                     // expects <td class=label*>

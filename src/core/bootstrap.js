@@ -11,4 +11,3 @@ var SWPTSDM = {
         this.$ = $;
     }
 };
-console.log(this);
