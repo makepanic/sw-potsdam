@@ -4,11 +4,11 @@
  */
 var SWPTSDM = {
     v: '0.0.1',
-    boot: function () {
+    $: null,
+    boot: function ($) {
         'use strict';
 
-        SWPTSDM.MealType = SWPTSDM.MealType();
-        SWPTSDM.FoodOverview = SWPTSDM.FoodOverview();
+        this.$ = $;
     }
 };
 console.log(this);

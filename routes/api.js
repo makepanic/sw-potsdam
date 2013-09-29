@@ -3,61 +3,53 @@
  request
  */
 
-/*
- * GET home page.
- */
-
-var jsdom = require('jsdom'),
-    request = require('request'),
+var request = require('request'),
     url = require('url'),
     fs = require('fs'),
-    SWPTSDM = fs.readFileSync(__dirname + '/../build/sw-potsdam-0.0.1.js', 'utf-8'),
-    jquery = fs.readFileSync(__dirname + '/../components/jquery/jquery.min.js', 'utf-8');
+    SWPTSDM = require('../build/sw-potsdam-0.0.1.js'),
+    cheerio = require('cheerio'),
+    nconf = require('nconf')
+    urls = nconf.get('urls');
 
-jsdom.defaultDocumentFeatures = {
-    FetchExternalResources   : ['script'],
-    ProcessExternalResources : ['script'],
-    MutationEvents           : '2.0',
-    QuerySelector            : false
-};
-
-// TODO: external file
-var cfg = {
-    urls: {
-        overview: 'http://www.studentenwerk-potsdam.de/speiseplan.html'
-    }
-};
+// load config file
+nconf.argv().file({ file: './config.json' });
 
 exports.overview = function (req, res) {
     'use strict';
 
-    request({
-        uri: cfg.urls.overview
-    }, function (err, response, body) {
+    var oldCreated = 0,
+        oldData = {},
+        responseData = {};
 
-        var that = this;
+    // open file check created timestamp
+    if (!(Date.now() - nconf.get('ttl') > oldCreated)) {
+        // send old json file
+        responseData = oldData;
+    } else {
+        request({
+            uri: urls.overview
+        }, function (err, response, body) {
+            var $,
+                $nextDays,
+                data;
 
-        if (err && response.statusCode !== 200) {
-            console.log('Request error.');
-        }
-
-        jsdom.env({
-            html: body,
-            src: [
-                SWPTSDM,
-                jquery
-            ],
-            done: function (err, window) {
-                var $ = window.jQuery,
-                    SWPTSDM = window.SWPTSDM,
-                    $nextDays;
-
-                console.log($('.site_title_no_right h1').text());
-
-                $nextDays = $('.bill_of_fare');
-                return SWPTSDM.FoodOverview.parse($nextDays);
+            if (err && response.statusCode !== 200) {
+                console.log('Request error.');
             }
-        });
 
-    });
+            $ = cheerio.load(body);
+
+            SWPTSDM.boot($);
+            $nextDays = SWPTSDM.$('.bill_of_fare');
+            console.log(SWPTSDM.$('.site_title_no_right h1').text());
+
+            // TODO: utf8-decode, save to json file
+            data = SWPTSDM.FoodOverview.extract($nextDays);
+            data.created = Date.now();
+
+            responseData = data;
+        });
+    }
+
+    res.send(responseData);
 };

@@ -33,9 +33,9 @@
             mealRow = $col[1];
             typeRow = $col[2];
 
-            data.title = titleRow.innerHTML.trim();
-            data.meal = $(mealRow).text().trim();
-            data.type = SWPTSDM.MealType.extract(typeRow);
+            data.title = SWPTSDM.$(titleRow).html().trim();
+            data.meal = SWPTSDM.$(mealRow).text().trim();
+            data.type = SWPTSDM.MealType.extract(SWPTSDM.$(typeRow));
 
             return data;
         };
@@ -58,20 +58,20 @@
             return tableData;
         };
 
-        parse = function (tables) {
+        parse = function ($tables) {
             var overViewData = [];
 
-            for (i = 0, max = tables.length; i < max; i += 1) {
-                overViewData.push(parseTable($(tables[i])));
-            }
+            $tables.each(function (index, elem) {
+                overViewData.push(parseTable(SWPTSDM.$(elem)));
+            });
 
             return overViewData;
         };
         return {
-            parse: parse
+            extract: parse
         };
     };
 
-    SWPTSDM.FoodOverview = FoodOverview;
+    SWPTSDM.FoodOverview = FoodOverview();
 
 }(SWPTSDM));

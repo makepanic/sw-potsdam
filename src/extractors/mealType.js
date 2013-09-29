@@ -19,7 +19,7 @@
                 VEGETABIL: 'ovo-lacto-vegetabil'
             },
             parse = function ($label) {
-                var className = $label[0].className,
+                var className = $label.attr('class'),
                     mealTypes = [],
                     $labelTypes,
                     i,
@@ -32,7 +32,8 @@
 
                 $labelTypes = $label.find('img');
                 $labelTypes.each(function (index, elem) {
-                    var attr = elem.getAttribute('title'),
+                    var $elem = SWPTSDM.$(elem),
+                        attr = $elem.attr('title'),
                         found = Object.keys(type).filter(function (key) {
                             // find the key for the given title attribute
                             return type[key] === attr;
@@ -48,6 +49,6 @@
             extract: parse
         };
     };
-    SWPTSDM.MealType = MealType;
+    SWPTSDM.MealType = MealType();
 
 }(SWPTSDM));
